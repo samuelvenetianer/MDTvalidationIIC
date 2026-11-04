@@ -1,1 +1,1 @@
-python CSM.py $1
+python CSM.py "$@"
