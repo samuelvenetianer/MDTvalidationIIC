@@ -8,8 +8,7 @@ import math
 from stats_func import calc_stats_txt
 from time import sleep
 from tqdm import tqdm
-
-# Testcommit 
+from plotting_func import plot_hist, plot_scatter, produce_good_cols_list
 
 '''
 Call in terminal as: python CSM.py <datafolder>
@@ -25,16 +24,13 @@ home_path = r"/home/svenetia/MDTvalidationIIC/"
 for i in range(1,len(sys.argv)):
     folder_path = global_path + sys.argv[1]
     if os.path.exists(folder_path) == True:
-        print("Reading folder: ", folder_path)
-
-        # locate csmMonitor file
         for file in os.listdir(folder_path):
             if "csmMonitor" in file:
-                data_path = folder_path + "/" +file
+                data_path_csm = folder_path + "/" +file
+            if "mezzMonitor" in file:
+                data_path_mezz = folder_path + "/" +file
             else:
                 continue
-
-        print("csmMonitor file found: ", data_path)
 
         skip_stats = True
 
@@ -44,15 +40,19 @@ for i in range(1,len(sys.argv)):
             print("Do you want to re-generate plots for", sys.argv[1], "(y/n)?")
             next_step = input()
             if next_step == "n":
-                print("Do you want to re-generate stats?")
+                print("Do you want to re-generate stats for", sys.argv[1], "(y/n)?")
                 ans = input()
                 if ans == "n":
                     print("Exiting...")
                     exit()
                 if ans == "y":
                     print("Regenerating stats only...")
-                    df = pd.read_csv(data_path, delimiter = ',')
-                    calc_stats_txt(df, sys.argv[1])
+                    df_csm = pd.read_csv(data_path_csm, delimiter=',')
+                    cols_to_ignore = ["scan", "time_s"]
+                    df_mezz = pd.read_csv(data_path_mezz, delimiter=',')
+                    cols_to_include = ["AVDD_display", "DVDD_display", "Temp_display"]
+                    calc_stats_txt(df_csm, True, False, cols_to_ignore, sys.argv[1], "CSM_stats.txt")
+                    calc_stats_txt(df_mezz, False, True, cols_to_include, sys.argv[1], "Mezz_stats.txt")
                     print("Done.")
                     exit()
             elif next_step == "y":
@@ -68,63 +68,31 @@ for i in range(1,len(sys.argv)):
         else:
             os.mkdir(home_path+sys.argv[1])
             print("Home folder created!")
+            skip_stats = False
 
-        # Read CSV to dataframe and assign headers
-        print("Converting to dataframe...")
-        df = pd.read_csv(data_path, delimiter=',')
-        # print("Headers: ", list(df))
-        print("Number of headers: ", len(list(df)))
-        # display(df)
+        # CSM Analysis
+        df_csm = pd.read_csv(data_path_csm, delimiter=',')
+        cols_to_ignore = ["scan", "time_s"]
+        good_df_csm = produce_good_cols_list(df_csm, True, False, cols_to_ignore)
+        time_data = df_csm["time_s"]
+        plot_hist(sys.argv[1], good_df_csm, 4, 30, 30, 45, "csm_hist")
+        plot_scatter(sys.argv[1], good_df_csm, 4, 30, time_data, 30, 45, "csm_scatter")
+        print("CSM data analyzed.")
 
-        hist_list = []
-        for cols in list(df):
-            if (cols == "scan") or (cols == "time_s"):
-                continue
-            else:
-                hist_list.append(cols)
-
-        num_plots = len(hist_list)
-        num_cols = 4
-
-        # determine number of rows for plot png
-        num_rows = math.ceil(num_plots/num_cols)
-
-        print("Plotting histograms...")
-        df.hist(column=hist_list, bins=30, layout =(num_rows,num_cols), figsize= (35,40), color='skyblue', edgecolor='black', grid=False)
-        plt.suptitle(sys.argv[1])
-        plt.savefig("/home/svenetia/MDTvalidationIIC"+"/"+sys.argv[1]+"/"+sys.argv[1]+"_hist.png", bbox_inches="tight")
-        plt.close()
-        print("Histograms plotted.")
-
-        row_counter = 0
-        col_counter = 0
-
-        print("Plotting time evolution...")
-
-        fig, axs = plt.subplots(num_rows, num_cols, figsize=(45, 60))
-        for i in tqdm(range(0, num_plots)):
-            if col_counter < num_cols:
-                axs[row_counter, col_counter].scatter(df['time_s'], df[hist_list[i]])
-                axs[row_counter, col_counter].set_title(hist_list[i])
-                col_counter+=1
-            else:
-                col_counter = 0
-                row_counter += 1
-                axs[row_counter, col_counter].scatter(df['time_s'], df[hist_list[i]])
-                axs[row_counter, col_counter].set_title(hist_list[i])
-                col_counter+=1
-
-        print("Saving...")
-        fig.savefig("/home/svenetia/MDTvalidationIIC"+"/"+sys.argv[1]+"/"+sys.argv[1]+"_scatter.png")
-        plt.close()
-
-        print("Scatters plotted.")
-
+        # Mezz Analysis
+        df_mezz = pd.read_csv(data_path_mezz, delimiter=',')
+        cols_to_include = ["AVDD_display", "DVDD_display", "Temp_display"]
+        good_df_mezz = produce_good_cols_list(df_mezz, False, True, cols_to_include)
+        scan_data = df_mezz["scan"]
+        plot_hist(sys.argv[1], good_df_mezz, 3, 30, 30, 150, "mezz_hist")
+        plot_scatter(sys.argv[1], good_df_mezz, 3, 30, scan_data, 30, 150, "mezz_scatter")
+        print("Mezz data analyzed.")
 
         # print stats information to txt file
         if skip_stats == False:
             print("Calculating stats...")
-            calc_stats_txt(df, sys.argv[1])
+            calc_stats_txt(df_csm, True, False, cols_to_ignore, sys.argv[1], "CSM_stats.txt")
+            calc_stats_txt(df_mezz, False, True, cols_to_include, sys.argv[1], "Mezz_stats.txt")
         else:
             print("Stats skipped.")
 
