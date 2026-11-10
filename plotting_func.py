@@ -72,5 +72,6 @@ def plot_scatter(foldername, new_df, number_of_cols, number_of_bins, xaxis_data,
             col_counter+=1
 
     save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+png_title+".png"
+    print(save_path)
     plt.savefig(save_path, bbox_inches="tight")
     plt.close()
