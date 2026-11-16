@@ -11,25 +11,41 @@ from tqdm import tqdm
 from plotting_func import plot_hist, plot_scatter, produce_good_cols_list
 import argparse
 
-# Start an empty bar chart
-# matplotlib.pyplot.bar(x, height, width=0.8, bottom=None, *, align='center', data=None, **kwargs)[source]
+# Create list of folders
+
+path = r"/home/svenetia/MDTvalidationIIC/"
+only_folders = [f for f in os.listdir(path) if os.path.isdir(os.path.join(path, f)) and ("pycache") not in f and "git" not in f]
+# print(only_folders)
+
+# Start an empty bar chart (matplotlib.pyplot.bar(x, height, width=0.8, bottom=None, *, align='center', data=None, **kwargs))
 
 fix, ax = plt.subplots()
 
-# Import txt to dataframe, set headers
-cols = ["param", "min", "max", "mean", "stddev", "datatype"]
-df = pd.read_csv(r'/home/svenetia/MDTvalidationIIC/20261006_EMS4C10_Ed/20261006_EMS4C10_Ed_CSM_stats.txt', skiprows=3, header = None, delim_whitespace = True)
-df.columns = cols
-display(df)
+# Loop thru folders and grab stats file
 
-# Grab data from one column and plot to bar chart
-ax.bar("20261006_EMS4C10_Ed_min", df.loc[0, "min"])
-# ax.bar("20261006_EMS4C10_Ed_max", df.loc[0, "max"])
-if "voltage" in df["param"][0]:
-    ax.set_ylabel("Voltage")
-else:
-    ax.set_ylabel("Temperature")
-ax.set_title(df["param"][0])
+for folder in only_folders:
+    files = os.listdir(path+folder)
+    # print(files)
+    for file in files:
+        if "CSM_stats" in file:
+            # print("here is the file we want: ", file)
+            
+            # Import txt to dataframe, set headers
+            cols = ["param", "min", "max", "mean", "stddev", "datatype"]
+            df = pd.read_csv(path+folder+"/"+file, skiprows=3, header = None, sep=r'\s+')
+            df.columns = cols
+            # display(df)
+
+            # Grab data from one column and plot to bar chart
+            ax.bar(folder, df.loc[0, "min"])
+            if "voltage" in df["param"][0]:
+                ax.set_ylabel("Voltage")
+            else:
+                ax.set_ylabel("Temperature")
+            ax.set_title(df["param"][0])
+            ax.tick_params(axis='x', labelrotation=90)
+        else:
+            continue
 
 # Save out figure
 plt.savefig(r'/home/svenetia/MDTvalidationIIC/test.png', bbox_inches="tight")
