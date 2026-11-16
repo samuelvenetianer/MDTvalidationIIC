@@ -44,7 +44,7 @@ def plot_hist(foldername, new_df, number_of_cols, number_of_bins, fig_sizex, fig
     num_rows = math.ceil(num_plots/num_cols)
 
     new_df.hist(column=new_df.columns, bins=number_of_bins, layout =(num_rows,num_cols), figsize= (fig_sizex,fig_sizey), color='skyblue', edgecolor='black', grid=False)
-    plt.suptitle(sys.argv[1])
+    plt.suptitle(foldername)
     save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+png_title+".png"
     plt.savefig(save_path, bbox_inches="tight")
     plt.close()

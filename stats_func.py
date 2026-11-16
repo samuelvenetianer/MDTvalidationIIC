@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def calc_stats_txt(dataframe_full, ignore, include, cols, foldername, filename):
 
@@ -49,40 +50,14 @@ def calc_stats_txt(dataframe_full, ignore, include, cols, foldername, filename):
 
     return
 
-def calc_rms(data, parameter:str, output_folder:str):
-    """
-    Function calculates root mean square of provided array
-    
-    Parameters:
-        data: values of interest
-        parameter: label of interest for printing result
- 
-    """
-    squared=np.square(data)
-    rms=np.sqrt(np.sum(squared)/len(data))
-    # print("Root Mean Squared of", parameter, "is: ", rms)
-    
-    with open(output_folder+"/"+"stats.txt", 'a') as f:
-        f.write("Root Mean Squared of "+ parameter+ " is: "+ str(rms)+"\n")
+def check_files(folder):
+    all_files = os.listdir(folder)
+    num_csv = 0
+    for file in all_files:
+        if ".csv" in file:
+            num_csv += 1
+            print(file)
 
-    return rms
 
-def calc_stddev(data, parameter:str, output_folder:str):
-
-    """
-    Function calculates standard deviation of provided array
-    
-    Parameters:
-        data: values of interest
-        parameter: label of interest for printing result
-
-    """
-    std_dev=np.std(data)
-    #print("Standard Deviation of", parameter, "is: ", std_dev)
-    
-    with open(output_folder+"/"+"stats.txt", 'a') as f:
-        f.write("Standard Deviation of "+ parameter+ " is: "+ str(std_dev)+ "\n")
-
-    return std_dev
 
 
