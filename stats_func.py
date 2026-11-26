@@ -35,7 +35,10 @@ def calc_stats_txt(dataframe_full, ignore, include, cols, foldername, filename):
     # max_time_s = dataframe["time_s"].max()
     # max_time_hr = max_time_s/3600
     
-    save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+filename+".txt"
+    # save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+filename+".txt"
+    save_path = "C:/Users/svene/OneDrive/Documents/Tufts/1. Research/8. MDT Electronics Comissioning/"+foldername+"_stats.txt"
+    # save_path = "C:/Users/svene/OneDrive/Documents/Tufts/1. Research/8. MDT Electronics Comissioning/"+foldername+"/"+foldername+"_"+filename+".txt"
+
     with open(save_path, 'w') as f:
         f.write("Dataset: ")
         f.write(foldername)

@@ -45,7 +45,8 @@ def plot_hist(foldername, new_df, number_of_cols, number_of_bins, fig_sizex, fig
 
     new_df.hist(column=new_df.columns, bins=number_of_bins, layout =(num_rows,num_cols), figsize= (fig_sizex,fig_sizey), color='skyblue', edgecolor='black', grid=False)
     plt.suptitle(foldername)
-    save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+png_title+".png"
+    # save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+png_title+".png"
+    save_path = "C:/Users/svene/OneDrive/Documents/Tufts/1. Research/8. MDT Electronics Comissioning/"+foldername+"_hist.png"
     plt.savefig(save_path, bbox_inches="tight")
     plt.close()
 
@@ -59,7 +60,7 @@ def plot_scatter(foldername, new_df, number_of_cols, number_of_bins, xaxis_data,
     col_counter = 0
 
     fig, axs = plt.subplots(num_rows, num_cols, figsize=(fig_sizex, fig_sizey))
-    for i in tqdm(range(0, num_plots)):
+    for i in range(0, num_plots):
         if col_counter < num_cols:
             axs[row_counter, col_counter].scatter(xaxis_data, new_df[new_df.columns[i]])
             axs[row_counter, col_counter].set_title(new_df.columns[i])
@@ -71,7 +72,10 @@ def plot_scatter(foldername, new_df, number_of_cols, number_of_bins, xaxis_data,
             axs[row_counter, col_counter].set_title(new_df.columns[i])
             col_counter+=1
 
-    save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+png_title+".png"
-    print(save_path)
+    # save_path = "/home/svenetia/MDTvalidationIIC"+"/"+foldername+"/"+foldername+"_"+png_title+".png"
+    # save_path = "C:/Users/svene/OneDrive/Documents/Tufts/1. Research/8. MDT Electronics Comissioning/"+foldername+"/"+foldername+"_"+png_title+".png"
+    save_path = "C:/Users/svene/OneDrive/Documents/Tufts/1. Research/8. MDT Electronics Comissioning/"+foldername+"_scatter.png"
+
+    # print(save_path)
     plt.savefig(save_path, bbox_inches="tight")
     plt.close()
